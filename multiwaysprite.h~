@@ -1,0 +1,38 @@
+#ifndef MULTIWAYSPRITE__H
+#define MULTIWAYSPRITE__H
+#include <string>
+#include <vector>
+#include "drawable.h"
+
+class MultiWaySprite : public Drawable {
+public:
+  MultiWaySprite(const std::string&);
+  MultiWaySprite(const MultiWaySprite&);
+  virtual ~MultiWaySprite() { } 
+
+  virtual void draw() const;
+  virtual void update(Uint32 ticks);
+  virtual const Frame* getFrame() const {
+    return frames[currentFrame]; 
+  }
+
+protected:
+  const std::vector<Frame *> frames;
+  const std::vector<Frame *> framesBack;
+  bool direction ;
+  int worldWidth;
+  int worldHeight;
+
+  unsigned currentFrame;
+  unsigned numberOfFrames;
+  unsigned frameInterval;
+  float timeSinceLastFrame;
+  int frameWidth;
+  int frameHeight;
+
+  void advanceFrame(Uint32 ticks);
+
+  Vector2f snowfall(const std::string&) ; 
+  Vector2f snowRate(const std::string&) ;
+};
+#endif

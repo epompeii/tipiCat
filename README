@@ -1,0 +1,18 @@
+Name:Everett Pompeii
+Clemson Email Address: epompei@clemson.edu
+
+Project no: 5
+Project due date: 23/4/14
+Project description: A Playble Game
+
+The Specs that I implemented are:
+A playable game that is actually fun
+The ability to restart without having to exit to command line
+Made video (32 seconds, not 20)
+Checked for leaks using Valgrind
+Filled this out
+
+The Specs that I was unable to implement are:
+
+Extras:
+

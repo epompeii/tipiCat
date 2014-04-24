@@ -1,0 +1,89 @@
+<?xml version = "1.0"?>
+<GameData>
+<!-- screenTitle is also used to identify you and your animation. 
+     So make sure to include your name as part of the screenTitle -->
+<screenTitle>Brian Malloy's Star Animation</screenTitle>
+<maxStringSize>50</maxStringSize>
+
+<frameCap>60</frameCap>
+<framesAreCapped>true</framesAreCapped>
+
+<frameMax>400</frameMax>
+<username>malloy</username>
+
+<view>
+  <viewWidth>854</viewWidth>
+  <viewHeight>480</viewHeight>
+</view>
+
+<world>
+  <worldWidth>1280</worldWidth>
+  <worldHeight>960</worldHeight>
+</world>
+
+<back>
+  <backFile>images/checkerboard.bmp</backFile>
+  <backRed>193</backRed>
+  <backGreen>205</backGreen>
+  <backBlue>205</backBlue>
+  <backFactor>1</backFactor>
+  <backSrcX>0</backSrcX>
+  <backSrcY>0</backSrcY>
+  <backWidth>1280</backWidth>
+  <backHeight>960</backHeight>
+  <backTransparency>false</backTransparency>
+</back>
+
+<font name="font">
+  <fontFile>font/dyslexic-bold.otf</fontFile>
+  <fontSize>16</fontSize>
+  <fontRed>0</fontRed>
+  <fontGreen>0</fontGreen>
+  <fontBlue>0</fontBlue>
+  <fontUnused>0</fontUnused>
+</font>
+
+<spinstar>
+  <spinstarFile>images/star.png</spinstarFile>
+  <spinstarLoc spinstarX="120" spinstarY="140"/>
+
+  <spinstarFrames>4</spinstarFrames>
+  <spinstarFrameInterval>20</spinstarFrameInterval>
+  <spinstarChunks>25</spinstarChunks>
+
+  <spinstarSrcX>0</spinstarSrcX>
+  <spinstarSrcY>0</spinstarSrcY>
+  <spinstarWidth>32</spinstarWidth>
+  <spinstarHeight>32</spinstarHeight>
+  <spinstarSpeedX>-200</spinstarSpeedX>
+  <spinstarSpeedY>200</spinstarSpeedY>
+  <spinstarTransparency>true</spinstarTransparency>
+</spinstar>
+
+<star>
+  <starFile>images/yellowstar32.png</starFile>
+  <starSrcX>0</starSrcX>
+  <starSrcY>0</starSrcY>
+  <starWidth>32</starWidth>
+  <starHeight>32</starHeight>
+  <starLoc starX="320" starY="240"/>
+  <starSpeed starSpeedX="-175" starSpeedY="175"/>
+  <starTransparency>true</starTransparency>
+  <starChunkSize>9</starChunkSize>
+  <starChunkDistance>200</starChunkDistance>
+</star>
+
+<greenorb>
+  <greenorbFile>images/greenball.bmp</greenorbFile>
+  <greenorbSrcX>0</greenorbSrcX>
+  <greenorbSrcY>0</greenorbSrcY>
+  <greenorbWidth>32</greenorbWidth>
+  <greenorbHeight>32</greenorbHeight>
+  <greenorbLoc greenorbX="320" greenorbY="240"/>
+  <greenorbSpeed greenorbSpeedX="175" greenorbSpeedY="175"/>
+  <greenorbTransparency>true</greenorbTransparency>
+  <greenorbChunkSize>9</greenorbChunkSize>
+  <greenorbChunkDistance>200</greenorbChunkDistance>
+</greenorb>
+
+</GameData>

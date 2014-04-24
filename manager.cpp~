@@ -1,0 +1,203 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include "sprite.h"
+#include "cat.h"
+#include "multiwaysprite.h"
+#include "gamedata.h"
+#include "manager.h"
+
+Manager::~Manager() { 
+  for(unsigned i = 0; i < sprites.size(); ++i){
+	delete sprites[i] ;
+  }
+}
+
+Manager::Manager() :
+  env( SDL_putenv(const_cast<char*>("SDL_VIDEO_CENTERED=center")) ),
+  io( IOManager::getInstance() ),
+  clock( Clock::getInstance() ),
+  screen( io.getScreen() ),
+  back("back", Gamedata::getInstance().getXmlInt("back/factor") ),
+  mid("mid", Gamedata::getInstance().getXmlInt("mid/factor") ),
+  fore("fore", Gamedata::getInstance().getXmlInt("fore/factor") ),
+  hud(),
+  viewport( Viewport::getInstance() ),
+  sprites(),
+  currentSprite(0),
+
+  makeVideo( false ),
+  frameCount( 0 ),
+  username(  Gamedata::getInstance().getXmlStr("username") ),
+  title( Gamedata::getInstance().getXmlStr("screenTitle") ),
+  frameMax( Gamedata::getInstance().getXmlInt("frameMax") ),
+  hudUp(true)
+ 
+{
+  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    throw string("Unable to initialize SDL: ");
+  }
+  SDL_WM_SetCaption(title.c_str(), NULL) ;
+  atexit(SDL_Quit) ;
+  sprites.push_back(new Cat("tipiCat")) ;
+  for(int looper = 0 ; looper < Gamedata::getInstance().getXmlInt("snowflakeMax") ; ++looper){
+  	sprites.push_back(new Sprite("snowflake")) ;
+ 	sprites.push_back(new MultiWaySprite("spinflake")) ;
+  }
+  viewport.setObjectToTrack(sprites[currentSprite]) ;
+}
+
+void Manager::draw() const {
+  back.draw() ;
+  mid.draw() ;
+  
+  
+  for(unsigned looper = sprites.size(); looper > 0; --looper){
+	sprites[looper-1]->draw() ;
+  }
+
+  fore.draw() ;
+
+  io.printMessageCenteredAt(title, 10);
+  io.printMessageCenteredAt(Gamedata::getInstance().getXmlStr("fullName"), 50);
+  viewport.draw();
+
+  if(hudUp == true){
+  	hud.drawHud(clock.getSeconds(),clock.getAvgFps()) ;
+  }
+
+  SDL_Flip(screen);
+}
+
+void Manager::makeFrame() {
+  std::stringstream strm;
+  strm << "video/" << username<< '.' 
+       << std::setfill('0') << std::setw(4) 
+       << frameCount++ << ".bmp";
+  std::string filename( strm.str() );
+  std::cout << "Making frame: " << filename << std::endl;
+  SDL_SaveBMP(screen, filename.c_str());
+}
+
+void Manager::update() {
+  ++clock;
+  Uint32 ticks = clock.getElapsedTicks();
+  for(unsigned looper = sprites.size(); looper > 0; --looper){
+	sprites[looper-1]->update(ticks) ;
+  }
+  if ( makeVideo && frameCount < frameMax ) {
+    makeFrame();
+  }
+
+  back.update();
+  mid.update();
+  fore.update();
+
+  if(hudUp == true){
+  	hud.drawHud(clock.getSeconds(),clock.getAvgFps()) ;
+  }
+
+  viewport.update();
+}
+
+void Manager::play() {
+	SDL_Event event;
+
+	  bool done = false;
+	  bool keyCatch = false;
+	  while ( not done ) {
+
+	    SDL_PollEvent(&event);
+	    Uint8 *keystate = SDL_GetKeyState(NULL);
+	    if (event.type ==  SDL_QUIT) { done = true; break; }
+	    if(event.type == SDL_KEYUP) { 
+	      keyCatch = false; 
+	    }
+	    if(event.type == SDL_KEYDOWN) {
+	      if (keystate[SDLK_ESCAPE] || keystate[SDLK_q]) {
+		done = true;
+		break;
+	      }
+	      if (keystate[SDLK_t] && !keyCatch) {
+		keyCatch = true;
+		currentSprite = (currentSprite+1) % sprites.size();
+		viewport.setObjectToTrack(sprites[currentSprite]);
+	      }
+	      if (keystate[SDLK_t] && !keyCatch) {
+		keyCatch = true;
+		currentSprite = (currentSprite+1) % sprites.size();
+		viewport.setObjectToTrack(sprites[currentSprite]);
+	      }
+	      if (keystate[SDLK_SPACE] && !keyCatch) {
+		keyCatch = true;
+		sprites[0]->play(1) ;
+	      }
+		if (keystate[SDLK_p] && !keyCatch) {
+		  keyCatch = true;
+		  if ( clock.isPaused() ) clock.unpause();
+		  else clock.pause();
+		}
+		if (keystate[SDLK_F4] && !makeVideo) {
+		  std::cout << "Making video frames" << std::endl;
+		  makeVideo = true;
+		}
+		if (keystate[SDLK_F1] && !keyCatch) {
+			keyCatch = true;
+			if(hudUp == true){
+				hudUp = false ;
+			}
+			else{
+				hudUp = true ;
+			}
+			//call the HUD class
+		}
+	    }
+		else{
+			sprites[0]->play(-1) ;
+		}
+
+	    draw();
+	    update();
+	  }
+}
+
+
+
+/*void Manager::drawBox() const {
+  Vector2f start = Vector2f(10, 25) ;
+  int totalLength =200;
+  int totalWidth = 100;
+  //const Uint32 RED = SDL_MapRGB(screen->format, 0xff, 0x00, 0x00);
+  const Uint32 GRAY = SDL_MapRGB(screen->format, 0xce, 0xb4, 0xb4) ;
+  const Uint32 BLACK = SDL_MapRGB(screen->format, 0x00, 0x00, 0x00);
+
+
+
+  Draw_AALine(screen, start[0], start[1]+totalWidth/2, 
+                      start[0]+totalLength, start[1]+totalWidth/2, 
+                      116.0, GRAY);
+  // Two Horizontal lines
+  Draw_AALine(screen, start[0], start[1]-8, 
+                      start[0]+totalLength, start[1]-8, 
+                      1.0, BLACK);
+  Draw_AALine(screen, start[0], start[1]+totalWidth+8, 
+                      start[0]+totalLength, start[1]+totalWidth+8, 
+                      1.0, BLACK);
+  // Two Vertical lines
+  Draw_AALine(screen, start[0]-1, start[1]-8, 
+                      start[0]-1, start[1]+totalWidth+8, 
+                      2.0, BLACK);
+  Draw_AALine(screen, start[0]+totalLength+1, start[1]-8, 
+                      start[0]+totalLength+1, start[1]+totalWidth+8, 
+                      2.0, BLACK);
+
+  io.printMessageValueAt("Seconds: ", clock.getSeconds(), 15, 25);
+  io.printMessageValueAt("fps: ", clock.getAvgFps(), 15, 45);
+  io.printMessageAt("Press T to switch sprites.", 15, 65);
+  io.printMessageAt("Press Spacebar to go up.", 15, 85);
+  io.printMessageAt("Catch the snowfall!", 15, 105);
+
+}*/
+
+//hud.drawHud(clock.getSeconds(),clock.getAvgFps()){} 
+

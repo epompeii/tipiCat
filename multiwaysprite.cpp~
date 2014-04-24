@@ -1,0 +1,91 @@
+#include "multiwaysprite.h"
+#include "gamedata.h"
+#include "frameFactory.h"
+
+void MultiWaySprite::advanceFrame(Uint32 ticks) {
+	timeSinceLastFrame += ticks;
+	if (timeSinceLastFrame > frameInterval) {
+    currentFrame = (currentFrame+1) % numberOfFrames;
+		timeSinceLastFrame = 0;
+	}
+}
+
+MultiWaySprite::MultiWaySprite(const std::string& name) :
+  Drawable(name, snowfall(name), snowRate(name)),
+  frames( FrameFactory::getInstance().getFrames(name) ),
+  framesBack( FrameFactory::getInstance().getFrames(name+"Back") ),
+  direction(true),
+  worldWidth(Gamedata::getInstance().getXmlInt("world/width")),
+  worldHeight(Gamedata::getInstance().getXmlInt("world/height")),
+
+  currentFrame(0),
+  numberOfFrames( Gamedata::getInstance().getXmlInt(name+"/frames") ),
+  frameInterval( Gamedata::getInstance().getXmlInt(name+"/frameInterval") ),
+  timeSinceLastFrame( 0 ),
+  frameWidth(frames[0]->getWidth()),
+  frameHeight(frames[0]->getHeight())
+{ }
+
+MultiWaySprite::MultiWaySprite(const MultiWaySprite& s) :
+  Drawable(s), 
+  frames(s.frames), framesBack(s.framesBack), direction(s.direction),
+  worldWidth( s.worldWidth ),
+  worldHeight( s.worldHeight ),
+  currentFrame(s.currentFrame),
+  numberOfFrames( s.numberOfFrames ),
+  frameInterval( s.frameInterval ),
+  timeSinceLastFrame( s.timeSinceLastFrame ),
+  frameWidth( s.frameWidth ),
+  frameHeight( s.frameHeight )
+  { }
+
+void MultiWaySprite::draw() const { 
+  Uint32 x = static_cast<Uint32>(X());
+  Uint32 y = static_cast<Uint32>(Y());
+  if(direction){
+  	frames[currentFrame]->draw(x, y);
+  }
+  else{
+	framesBack[currentFrame]->draw(x, y);
+  }
+}
+
+void MultiWaySprite::update(Uint32 ticks) { 
+  advanceFrame(ticks);
+
+  Vector2f incr = getVelocity() * static_cast<float>(ticks) * 0.001;
+  setPosition(getPosition() + incr);
+
+  if ( Y() < 0) {
+	direction = false ;
+    velocityY( abs( velocityY() ) );
+  }
+  if ( Y() > worldHeight-frameHeight) {
+	direction = true ;
+    velocityY( -abs( velocityY() ) );
+  }
+
+  if ( X() < 0) {
+    	direction = false ;
+    velocityX( abs( velocityX() ) );
+  }
+  if ( X() > worldWidth-frameWidth) {
+	direction = true ;
+    velocityX( -abs( velocityX() ) );
+  }  
+
+}
+
+Vector2f MultiWaySprite::snowfall(){
+	static int snowStart = 0 ;
+	Vector2f snow(snowStart,0) ;
+	snowStart += (int)Gamedata::getInstance().getXmlInt("back/width")/Gamedata::getInstance().getXmlInt("snowflakeMax") ;
+	return snow ;
+ }
+
+Vector2f MultiWaySprite::snowRate(const std::string& name){
+	int snowSpeedX = (rand()%Gamedata::getInstance().getXmlInt(name+"/speedX"))+ 1 ;
+	int snowSpeedY = (rand()%Gamedata::getInstance().getXmlInt(name+"/speedY"))+ 1 ;
+	Vector2f snow(snowSpeedX,snowSpeedY) ;
+	return  snow ;	
+}

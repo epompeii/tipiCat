@@ -1,18 +1,8 @@
-Name:Everett Pompeii
-Clemson Email Address: epompei@clemson.edu
+Tipi Cat
+Plays as The Tipi Cat and catch as many snowflakes as you can before they pile up. 
+Musical credit to Winter Bells. I do not own the rights to the soundtrack.
 
-Project no: 5
-Project due date: 23/4/14
-Project description: A Playble Game
-
-The Specs that I implemented are:
-A playable game that is actually fun
-The ability to restart without having to exit to command line
-Made video (32 seconds, not 20)
-Checked for leaks using Valgrind
-Filled this out
-
-The Specs that I was unable to implement are:
-
-Extras:
+Source Code: https://github.com/epompeii/tipiCat.git
+Game Play Video: https://www.youtube.com/watch?v=nIXvdUxcJ6o
+Blog Post: http://www.nemostravels.com/2014/04/tipi-cat.html
 
